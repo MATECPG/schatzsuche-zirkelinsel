@@ -46,39 +46,48 @@ if(S('f2a')){
  {const s=S('f3c');base3(s);X(s,PA,'A',-4,1);Cc(s,PA,d(PA,P3));X(s,PB,'B',-4,0);Cc(s,PB,d(PB,P3));X(s,P3p,'P′',1.6,-0.8);}
 }
 
-/* ---------- Aufgabe 1: Achsen finden ---------- */
+/* Lösungsschritte: jede Gruppe ist ein Schritt (data-step). Auf dem Arbeitsblatt werden alle gezeigt. */
+const st=(svg,n)=>el('g',{class:'sol','data-step':n},svg);
+
 [['u1a',{x:12,y:38},{x:44,y:16},'K'],['u1b',{x:14,y:12},{x:46,y:30},'M'],['u1c',{x:20,y:9},{x:36,y:44},'N']].forEach(([id,P,Q,n])=>{
-  const s=S(id);if(!s)return;X(s,P,n,1.4,-1.2);X(s,Q,n+'′',1.4,-1.2);const g=sg(s);const k=axisCon(g,P,Q,d(P,Q)*0.68,false);L(g,k[0],k[1],'axl');});
+  const s=S(id);if(!s)return;X(s,P,n,1.4,-1.2);X(s,Q,n+'′',1.4,-1.2);const r=d(P,Q)*0.68;const k=ci(P,r,Q,r);
+  Cc(st(s,1),P,r);Cc(st(s,2),Q,r);const g3=st(s,3);k.forEach(p=>X(g3,p,''));L(st(s,4),k[0],k[1],'axl');});
 
 /* ---------- Aufgabe 2: Spiegeldreieck ---------- */
 if(S('u2')){const s=S('u2');const a1={x:84,y:68},a2={x:98,y:2};L(s,a1,a2,'axl','a',{x:100,y:6});
  const R={x:36,y:18},Sx={x:62,y:10},T={x:48,y:44};[[R,'R'],[Sx,'S'],[T,'T']].forEach(([p,n])=>X(s,p,n,-1.5,-2));
- const g=sg(s);const pts=[R,Sx,T].map(p=>refl(p,a1,a2));const H1=onL(a1,a2,87),H2=onL(a1,a2,94);
- X(g,H1,'H₁',-5,1);X(g,H2,'H₂',-5,1);[R,Sx,T].forEach((p,i)=>{Cc(g,H1,d(H1,p));Cc(g,H2,d(H2,p));X(g,pts[i],['R′','S′','T′'][i],1.4,-1.2);});
- el('polygon',{points:pts.map(p=>p.x+','+p.y).join(' '),fill:'none',stroke:'#D23B3B','stroke-width':.4},g);}
+ const pts=[R,Sx,T].map(p=>refl(p,a1,a2));const H1=onL(a1,a2,87),H2=onL(a1,a2,94);
+ const g1=st(s,1);X(g1,H1,'H₁',-5,1);X(g1,H2,'H₂',-5,1);
+ [R,Sx,T].forEach((p,i)=>{const g=st(s,i+2);Cc(g,H1,d(H1,p));Cc(g,H2,d(H2,p));X(g,pts[i],['R′','S′','T′'][i],1.4,-1.2);});
+ el('polygon',{points:pts.map(p=>p.x+','+p.y).join(' '),fill:'none',stroke:'#D23B3B','stroke-width':.4},st(s,5));}
 
 /* ---------- Aufgabe 3a: Koordinatensystem (nur Hilfe-Seite) ---------- */
 if(S('u3')){const s=S('u3');const px=kosy(s,14,62,8,-1,7,-1,6);
- const E=px(1,2),Ep=px(5,4);X(s,E,'E',-1,-1.8);X(s,Ep,'E′',1.4,-1.4);
- const g=sg(s);const k=axisCon(g,E,Ep,3.2*8,false);L(g,px(3,3),px(4,1),'axl','a',{x:px(2,5).x-5,y:px(2,5).y});
- X(g,px(3,3),'(3|3)',1.6,1.2);X(g,px(4,1),'(4|1)',1.6,1.2);X(g,px(2,5),'(2|5)',1.6,1.2);}
+ const E=px(1,2),Ep=px(5,4);X(s,E,'E',-1,-1.8);X(s,Ep,'E′',1.4,-1.4);const r=3.2*8;const k=ci(E,r,Ep,r);
+ Cc(st(s,1),E,r);Cc(st(s,2),Ep,r);const g3=st(s,3);k.forEach(p=>X(g3,p,''));
+ L(st(s,4),px(3,3),px(4,1),'axl','a',{x:px(2,5).x-5,y:px(2,5).y});
+ const g5=st(s,5);X(g5,px(3,3),'(3|3)',1.6,1.2);X(g5,px(4,1),'(4|1)',1.6,1.2);X(g5,px(2,5),'(2|5)',1.6,1.2);}
 
 /* ---------- Aufgabe 5: Spiegelbild einer Geraden ---------- */
 if(S('u5')){const s=S('u5');const a1={x:10,y:60},a2={x:62,y:2};L(s,a1,a2,'axl','a',{x:63,y:7});
  const g1={x:4,y:24},g2={x:72,y:44};L(s,g1,g2,'gl','g',{x:3,y:21});
- const G=onL(g1,g2,12);const Gp=refl(G,a1,a2);const g=sg(s);
+ const G=onL(g1,g2,12);const Gp=refl(G,a1,a2);
  const den=(a2.x-a1.x)*(g2.y-g1.y)-(a2.y-a1.y)*(g2.x-g1.x);const t=((g1.x-a1.x)*(g2.y-g1.y)-(g1.y-a1.y)*(g2.x-g1.x))/den;
- const Sp={x:a1.x+t*(a2.x-a1.x),y:a1.y+t*(a2.y-a1.y)};X(g,Sp,'S',1.6,3.6);
- X(g,G,'G',-1,-2);const H1=onL(a1,a2,24),H2=onL(a1,a2,45);X(g,H1,'');X(g,H2,'');Cc(g,H1,d(H1,G));Cc(g,H2,d(H2,G));X(g,Gp,'G′',1.4,-1.2);
- L(g,Sp,Gp,'gl','g′',{x:Sp.x+(Sp.x-Gp.x)*1.2+2,y:Sp.y+(Sp.y-Gp.y)*1.2});}
+ const Sp={x:a1.x+t*(a2.x-a1.x),y:a1.y+t*(a2.y-a1.y)};X(st(s,1),Sp,'S',1.6,3.6);
+ X(st(s,2),G,'G',-1,-2);const H1=onL(a1,a2,24),H2=onL(a1,a2,45);
+ const g3=st(s,3);X(g3,H1,'');X(g3,H2,'');Cc(g3,H1,d(H1,G));Cc(g3,H2,d(H2,G));
+ X(st(s,4),Gp,'G′',1.4,-1.2);
+ L(st(s,5),Sp,Gp,'gl','g′',{x:Sp.x+(Sp.x-Gp.x)*1.2+2,y:Sp.y+(Sp.y-Gp.y)*1.2});}
 
 /* ---------- Aufgabe 6: Fehlersuche ---------- */
 if(S('u6')){const s=S('u6');const P={x:16,y:32},Q={x:48,y:24};X(s,P,'P',-4,1);X(s,Q,'P′',1.6,-1.2);
  const k=ci(P,20,Q,28);Cc(s,P,20);Cc(s,Q,28);k.forEach(p=>X(s,p,''));L(s,k[0],k[1],'axl','a?',{x:k[0].x+2.5,y:k[0].y+1});
- const g=sg(s);const k2=axisCon(g,P,Q,22,false);L(g,k2[0],k2[1],'axl','a',{x:k2[1].x+2,y:k2[1].y+6});}
+ const k2=ci(P,22,Q,22);Cc(st(s,1),P,22);Cc(st(s,2),Q,22);const g3=st(s,3);k2.forEach(p=>X(g3,p,''));
+ L(st(s,4),k2[0],k2[1],'axl','a',{x:k2[1].x+2,y:k2[1].y+6});}
 
 /* ---------- Aufgabe 7: Schatz der drei Bäume ---------- */
 if(S('u7')){const s=S('u7');const px=kosy(s,8,64,9,0,8,0,6);
  const A=px(1,1),B=px(7,1),C=px(7,5);X(s,A,'A',-1,-1.8);X(s,B,'B',1.4,-1.4);X(s,C,'C',1.4,-1.4);
- const g=sg(s);axisCon(g,A,B,4*9,false);L(g,px(4,0),px(4,6),'axl');axisCon(g,B,C,3*9,false);L(g,px(0,3),px(8,3),'axl');
- X(g,px(4,3),'Z(4|3)',1.4,-1.4);}
+ const g1=st(s,1);axisCon(g1,A,B,4*9,false);L(st(s,2),px(4,0),px(4,6),'axl');
+ const g3=st(s,3);axisCon(g3,B,C,3*9,false);L(st(s,4),px(0,3),px(8,3),'axl');
+ X(st(s,5),px(4,3),'Z(4|3)',1.4,-1.4);}
