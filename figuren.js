@@ -6,7 +6,10 @@ const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const sg=svg=>el('g',{class:'sol'},svg);
 function X(g,p,lab,dx=1.4,dy=-1.2){const s=.9;el('line',{x1:p.x-s,y1:p.y-s,x2:p.x+s,y2:p.y+s,class:'x'},g);el('line',{x1:p.x-s,y1:p.y+s,x2:p.x+s,y2:p.y-s,class:'x'},g);
   if(lab){const t=el('text',{x:p.x+dx,y:p.y+dy,class:'lbl'},g);t.textContent=lab;}}
-function L(g,a,b,cls,lab,lp){const dx=b.x-a.x,dy=b.y-a.y,k=300/Math.hypot(dx,dy);el('line',{x1:a.x-dx*k,y1:a.y-dy*k,x2:a.x+dx*k,y2:a.y+dy*k,class:cls},g);
+/* Gerade durch a und b, auf den Bildausschnitt (viewBox) begrenzt */
+function L(g,a,b,cls,lab,lp){const vb=(g.ownerSVGElement||g).viewBox.baseVal,m=1;const dx=b.x-a.x,dy=b.y-a.y;let t0=-1e6,t1=1e6;
+  [[-dx,a.x-(vb.x-m)],[dx,vb.x+vb.width+m-a.x],[-dy,a.y-(vb.y-m)],[dy,vb.y+vb.height+m-a.y]].forEach(([p,q])=>{if(p===0)return;const t=q/p;if(p<0)t0=Math.max(t0,t);else t1=Math.min(t1,t);});
+  el('line',{x1:a.x+t0*dx,y1:a.y+t0*dy,x2:a.x+t1*dx,y2:a.y+t1*dy,class:cls},g);
   if(lab){const t=el('text',{x:lp.x,y:lp.y,class:'lbl',style:`fill:${cls.includes('axl')?'#E0705F':'#4F8BC2'}`},g);t.textContent=lab;}}
 function Cc(g,c,r){el('circle',{cx:c.x,cy:c.y,r,class:'cc'},g);}
 function refl(p,a,b){const dx=b.x-a.x,dy=b.y-a.y,t=((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy);const f={x:a.x+t*dx,y:a.y+t*dy};return{x:2*f.x-p.x,y:2*f.y-p.y};}
