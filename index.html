@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schatzsuche auf der Zirkelinsel</title>
+<style>
+  :root{
+    --ink:#2F3440; --muted:#6B7280; --paper:#FFFDF8; --card:#FFFFFF; --line:#ECE6DA;
+    --mint:#D8F0E4; --mint-d:#4E9E7B;
+    --peach:#FDE3D3; --peach-d:#D9774D;
+    --lav:#E6E0F8; --lav-d:#7E6FC4;
+    --sky:#DAEAF8; --sky-d:#4F8BC2;
+    --butter:#FBF2CC; --butter-d:#B8931A;
+    --rose:#F8D9DF; --rose-d:#C95670;
+    --map:#FBF1DC; --map-edge:#E9D9B5;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Avenir Next","Nunito","Segoe UI",system-ui,-apple-system,sans-serif;line-height:1.5;font-size:17px}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  header h1{font-size:1.65rem;margin:.2em 0 .1em;letter-spacing:-.01em}
+  .kicker{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600}
+  .story{background:var(--butter);border-radius:14px;padding:14px 16px;margin:14px 0}
+  .story p{margin:.3em 0}
+  .scroll{font-style:italic;background:#fff8e4;border:1px dashed var(--butter-d);border-radius:10px;padding:8px 12px;margin:8px 0}
+
+  .chest{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:10px 14px;position:sticky;top:8px;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  .chest .lbl{font-weight:600;font-size:.9rem}
+  .slots{display:flex;gap:6px}
+  .slot{width:34px;height:40px;border-radius:8px;border:2px dashed #D9CFB8;display:grid;place-items:center;font-weight:700;font-size:1.25rem;background:#fffdf6}
+  .slot.on{border-style:solid;border-color:var(--mint-d);background:var(--mint);animation:pop .4s}
+  .steps{margin-left:auto;display:flex;gap:6px}
+  .dot{width:12px;height:12px;border-radius:50%;background:#E5E0D4}
+  .dot.done{background:var(--mint-d)} .dot.cur{background:var(--peach-d)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 18px 20px;margin:18px 0;
+    box-shadow:0 2px 14px rgba(60,50,20,.05)}
+  .card.locked{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+  .card h2{margin:0 0 .3em;font-size:1.25rem;display:flex;align-items:center;gap:10px}
+  .num{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:1rem;color:#fff;flex:none}
+  .c1 .num{background:var(--mint-d)} .c2 .num{background:var(--sky-d)} .c3 .num{background:var(--peach-d)} .c4 .num{background:var(--lav-d)}
+  .task{background:#F7F5EF;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:.95rem}
+  .task b{color:var(--ink)}
+
+  svg.map{width:100%;height:auto;display:block;border-radius:14px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair}
+  .readout{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .chip{border-radius:999px;padding:5px 12px;font-weight:600;font-size:.95rem}
+  .chip.p{background:var(--mint)} .chip.f{background:var(--lav)} .chip.eq{background:#eee}
+  .chip.eq.ok{background:var(--mint-d);color:#fff}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  button{font:inherit;border:none;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--sky);color:var(--ink);
+    transition:transform .08s, background .2s}
+  button:active{transform:scale(.97)}
+  button.main{background:var(--peach-d);color:#fff}
+  button.ghost{background:#F1EEE6}
+  button:disabled{opacity:.4;cursor:default}
+  .pad{display:grid;grid-template-columns:repeat(3,40px);grid-template-rows:repeat(2,36px);gap:4px}
+  .pad button{padding:0;border-radius:9px;font-size:1rem;background:#F1EEE6}
+  .pad .up{grid-column:2} .pad .le{grid-column:1;grid-row:2} .pad .dn{grid-column:2;grid-row:2} .pad .ri{grid-column:3;grid-row:2}
+  .msg{min-height:1.6em;margin-top:8px;font-weight:600}
+  .msg.good{color:var(--mint-d)} .msg.bad{color:var(--rose-d)} .msg.info{color:var(--sky-d)}
+  input[type=range]{width:100%;accent-color:var(--sky-d)}
+  .slider{background:var(--sky);border-radius:12px;padding:10px 14px;margin-top:10px}
+  .slider .v{font-weight:700}
+
+  .mc{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px;display:none}
+  .mc.show{display:block;animation:fade .4s}
+  .mc .q{font-weight:700;margin-bottom:8px}
+  .mc button{display:block;width:100%;text-align:left;background:#F7F5EF;margin:6px 0;font-weight:500}
+  .mc button.right{background:var(--mint);outline:2px solid var(--mint-d)}
+  .mc button.wrong{background:var(--rose);animation:shake .35s}
+  .merk{display:none;border-radius:14px;padding:12px 14px;margin-top:12px;border-left:6px solid}
+  .merk.show{display:block;animation:fade .5s}
+  .c1 .merk{background:var(--mint);border-color:var(--mint-d)}
+  .c2 .merk{background:var(--sky);border-color:var(--sky-d)}
+  .c3 .merk{background:var(--peach);border-color:var(--peach-d)}
+  .merk h3{margin:0 0 4px;font-size:1rem}
+  .ab{display:inline-block;margin-top:8px;background:#fff;border-radius:8px;padding:4px 10px;font-size:.9rem;font-weight:600}
+
+  .final{text-align:center}
+  .final input{font:inherit;font-size:1.4rem;letter-spacing:.3em;text-transform:uppercase;text-align:center;width:220px;
+    padding:8px;border-radius:12px;border:2px solid var(--line);margin:8px}
+  .win{display:none;font-size:1.1rem;margin-top:10px}
+  .win.show{display:block;animation:pop .5s}
+  .big{font-size:3rem;line-height:1}
+
+  @keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* SVG */
+  .axis{stroke:#E0705F;stroke-width:.55}
+  .axis.ghost{stroke-dasharray:1.6 1.2;opacity:.6}
+  .ccl{fill:none;stroke:#7C8596;stroke-width:.3;stroke-dasharray:1.2 .8}
+  .xpt{stroke:#2F3440;stroke-width:.45;stroke-linecap:round}
+  .lbl{font-size:3.2px;font-weight:700;fill:#2F3440;font-family:inherit}
+  .small{font-size:2.6px;font-weight:600;fill:#6B7280}
+  .emoji{font-size:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Mathe 7 · Symmetrie</div>
+  <h1>Die Schatzsuche auf der Zirkelinsel 🏝️</h1>
+</header>
+
+<div class="story">
+  <p>Kapitänin Kreisel hat auf der Zirkelinsel einen Schatz vergraben. In ihrer Kiste findest du nur eine alte Karte, einen <b>Zirkel</b> und ein <b>Lineal</b>. Ein Maßband? Fehlanzeige!</p>
+  <p>Löse die vier Stationen. Für jede gelöste Station bekommst du einen Buchstaben für das <b>Lösungswort</b>.</p>
+  <p>📝 Leg dein <b>Arbeitsblatt</b> daneben: Nach den Stationen 1–3 füllst du dort je einen Kasten aus.</p>
+</div>
+
+<div class="chest">
+  <span class="lbl">🧰 Lösungswort:</span>
+  <div class="slots" id="slots"></div>
+  <div class="steps" id="steps"></div>
+</div>
+
+<!-- STATION 1 -->
+<section class="card c1" id="st1">
+  <h2><span class="num">1</span> Gleich weit weg</h2>
+  <div class="scroll">„Grabe dort, wo du von der <b>alten Palme</b> 🌴 genauso weit entfernt bist wie vom <b>Felsen</b> 🪨.“</div>
+  <div class="task"><b>Auftrag:</b> Tippe auf die Karte (oder ziehe), um die Schaufel ⛏️ zu bewegen. Mit den Pfeilen kannst du fein nachjustieren. Wenn beide Abstände gleich sind, drücke <b>„Hier graben!“</b>. Finde <b>4 verschiedene</b> Stellen – es gibt mehr als eine!</div>
+  <svg class="map" id="map1" viewBox="0 0 100 70"></svg>
+  <div class="readout">
+    <span class="chip p" id="dP">Palme: – m</span>
+    <span class="chip f" id="dF">Felsen: – m</span>
+    <span class="chip eq" id="dEq">gleich weit?</span>
+  </div>
+  <div class="row">
+    <button class="main" id="dig1">⛏️ Hier graben!</button>
+    <div class="pad">
+      <button class="up" data-d="0,-0.3" aria-label="hoch">↑</button>
+      <button class="le" data-d="-0.3,0" aria-label="links">←</button>
+      <button class="dn" data-d="0,0.3" aria-label="runter">↓</button>
+      <button class="ri" data-d="0.3,0" aria-label="rechts">→</button>
+    </div>
+    <span id="flagCount" style="font-weight:600">🚩 0 / 4</span>
+  </div>
+  <div class="msg" id="msg1"></div>
+  <div class="mc" id="mc1"></div>
+  <div class="merk" id="merk1">
+    <h3>💡 Satz von den Achsenpunkten</h3>
+    Palme P und Felsen F liegen <b>symmetrisch</b> zur roten Geraden a. Punkte, die auf der Symmetrieachse liegen – und <b>nur diese</b> –, sind von zwei zueinander symmetrischen Punkten <b>gleich weit entfernt</b>.
+    <div class="ab">📝 Arbeitsblatt: Fülle Kasten ① aus.</div>
+  </div>
+</section>
+
+<!-- STATION 2 -->
+<section class="card c2 locked" id="st2">
+  <h2><span class="num">2</span> Die Achse mit dem Zirkel</h2>
+  <div class="scroll">„Wer klug ist, misst nicht. Er nimmt den Zirkel.“</div>
+  <div class="task"><b>Auftrag:</b> Ohne Maßband kannst du keine Abstände messen. Aber ein Zirkel zeichnet Kreise – und alle Punkte auf einem Kreis haben <b>denselben Abstand</b> zum Mittelpunkt. Stelle mit dem Regler den Radius ein. Um Palme und Felsen wird ein Kreis mit <b>gleichem Radius</b> gezeichnet.</div>
+  <svg class="map" id="map2" viewBox="0 0 100 70"></svg>
+  <div class="slider">Radius r = <span class="v" id="rv">12,0</span> m
+    <input type="range" id="r2" min="8" max="45" step="0.5" value="12">
+  </div>
+  <div class="row">
+    <button class="main" id="draw2" disabled>📏 Gerade durch S₁ und S₂ zeichnen</button>
+  </div>
+  <div class="msg" id="msg2"></div>
+  <div class="mc" id="mc2"></div>
+  <div class="merk" id="merk2">
+    <h3>💡 Konstruktion der Symmetrieachse</h3>
+    Zeichne um P und P′ zwei Kreise mit <b>gleichem</b>, genügend großem Radius. Die beiden Schnittpunkte sind von P und P′ gleich weit entfernt, liegen also auf der Achse. Die Gerade durch die beiden Schnittpunkte ist die gesuchte Achse a.
+    <div class="ab">📝 Arbeitsblatt: Fülle Kasten ② aus.</div>
+  </div>
+</section>
+
+<!-- STATION 3 -->
+<section class="card c3 locked" id="st3">
+  <h2><span class="num">3</span> Der Spiegelfelsen</h2>
+  <div class="scroll">„Der Fluss ist mein Spiegel. Der Schatz liegt genau <b>spiegelbildlich</b> zum Totenkopffelsen 💀 – auf der anderen Seite des Flusses.“</div>
+  <div class="task" id="task3"><b>Schritt 1:</b> Tippe auf einen <b>beliebigen Punkt A</b> auf dem Fluss (der roten Achse a).</div>
+  <svg class="map" id="map3" viewBox="0 0 100 70"></svg>
+  <div class="row">
+    <button class="ghost" id="reset3">↺ Neu beginnen (andere Punkte probieren)</button>
+  </div>
+  <div class="msg" id="msg3"></div>
+  <div class="mc" id="mc3"></div>
+  <div class="merk" id="merk3">
+    <h3>💡 Konstruktion eines Spiegelpunkts</h3>
+    Wähle zwei beliebige Punkte A und B auf der Achse a. Zeichne um A einen Kreis durch P und um B einen Kreis durch P. Der <b>zweite Schnittpunkt</b> der beiden Kreise ist der Spiegelpunkt P′. (A und B sind Achsenpunkte, also von P und P′ gleich weit entfernt.)
+    <div class="ab">📝 Arbeitsblatt: Fülle Kasten ③ aus.</div>
+  </div>
+</section>
+
+<!-- STATION 4 -->
+<section class="card c4 locked" id="st4">
+  <h2><span class="num">4</span> Die letzte Prüfung</h2>
+  <div class="task">Die Schatzkiste hat ein Zahlenschloss aus Fragen. Beantworte beide richtig!</div>
+  <div class="mc show" id="mc4a"></div>
+  <div class="mc" id="mc4b"></div>
+</section>
+
+<section class="card final locked" id="st5">
+  <div class="big">🗝️</div>
+  <h2 style="justify-content:center">Öffne die Schatzkiste</h2>
+  <p>Trage dein Lösungswort ein:</p>
+  <input id="word" maxlength="8" autocomplete="off" autocapitalize="characters">
+  <div><button class="main" id="open">Öffnen</button></div>
+  <div class="msg" id="msg5"></div>
+  <div class="win" id="win">
+    <div class="big">💰✨</div>
+    <p><b>Geschafft!</b> Das Lösungswort ist <b>KREIS</b>.<br>
+    Beim <b>Konstruieren</b> zeichnet man nur mit <b>Zirkel</b> (also Kreisen) und <b>Lineal</b> (also Geraden) – genau wie du eben.</p>
+    <p>📝 Weiter geht es mit den Übungen auf dem Arbeitsblatt.</p>
+  </div>
+</section>
+
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const fmt=v=>v.toFixed(1).replace('.',',');
+const W=100,H=70;
+function svgPt(svg,evt){const p=svg.createSVGPoint();p.x=evt.clientX;p.y=evt.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());return{x:Math.max(1,Math.min(W-1,q.x)),y:Math.max(1,Math.min(H-1,q.y))};}
+function circInt(c1,r1,c2,r2){const d=dist(c1,c2);if(d>r1+r2||d<Math.abs(r1-r2)||d===0)return[];
+  const a=(r1*r1-r2*r2+d*d)/(2*d),h=Math.sqrt(Math.max(0,r1*r1-a*a));const x=c1.x+a*(c2.x-c1.x)/d,y=c1.y+a*(c2.y-c1.y)/d;
+  return[{x:x+h*(c2.y-c1.y)/d,y:y-h*(c2.x-c1.x)/d},{x:x-h*(c2.y-c1.y)/d,y:y+h*(c2.x-c1.x)/d}];}
+function lineThrough(g,a,b,cls){const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy),k=200/L;
+  return el('line',{x1:a.x-dx*k,y1:a.y-dy*k,x2:a.x+dx*k,y2:a.y+dy*k,class:cls},g);}
+function cross(g,p,label,dx=1.6,dy=-1.4,col){const s=1.1;const gg=el('g',{},g);
+  el('line',{x1:p.x-s,y1:p.y-s,x2:p.x+s,y2:p.y+s,class:'xpt',style:col?`stroke:${col}`:''},gg);
+  el('line',{x1:p.x-s,y1:p.y+s,x2:p.x+s,y2:p.y-s,class:'xpt',style:col?`stroke:${col}`:''},gg);
+  if(label){const t=el('text',{x:p.x+dx,y:p.y+dy,class:'lbl'},gg);t.textContent=label;}return gg;}
+function emoji(g,p,ch,dy=-2.2,size=5){const t=el('text',{x:p.x,y:p.y+dy,'text-anchor':'middle',class:'emoji',style:`font-size:${size}px`},g);t.textContent=ch;return t;}
+
+let uid=0;
+function mapBase(svg,opts={}){
+  const id='clip'+(uid++);
+  const defs=el('defs',{},svg);const cp=el('clipPath',{id},defs);el('rect',{x:0,y:0,width:W,height:H,rx:4},cp);
+  const root=el('g',{'clip-path':`url(#${id})`},svg);
+  el('rect',{x:0,y:0,width:W,height:H,fill:'#CFE6F2'},root);           // Meer
+  el('path',{d:'M6 10 Q12 2 30 4 Q52 1 70 5 Q92 4 95 16 Q99 34 94 50 Q92 66 72 66 Q50 69 30 66 Q8 66 5 50 Q1 30 6 10Z',fill:'#FBF1DC',stroke:'#E9D9B5','stroke-width':.6},root);
+  // Graspolster
+  [[18,56,7,3.5],[82,14,6,3],[85,58,5,2.6],[14,16,5,2.4]].forEach(([x,y,rx,ry])=>el('ellipse',{cx:x,cy:y,rx,ry,fill:'#DCEFDF'},root));
+  // Kompass
+  const k=el('g',{opacity:.7},root);el('text',{x:93.5,y:9,'text-anchor':'middle',class:'small'},k).textContent='N';
+  el('path',{d:'M93.5 10 L92.3 14 L93.5 13.2 L94.7 14Z',fill:'#6B7280'},k);
+  if(opts.river){const r=opts.river;
+    const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y,L=Math.hypot(dx,dy);const k2=200/L;
+    el('line',{x1:r.a.x-dx*k2,y1:r.a.y-dy*k2,x2:r.a.x+dx*k2,y2:r.a.y+dy*k2,stroke:'#AFD3EA','stroke-width':6,'stroke-linecap':'round'},root);}
+  return root;
+}
+
+/* ---------- Fortschritt ---------- */
+const WORD='KREIS';const got=Array(5).fill(false);let stage=1;
+const slots=$('slots'),steps=$('steps');
+for(let i=0;i<5;i++){const s=document.createElement('div');s.className='slot';slots.appendChild(s);}
+for(let i=0;i<4;i++){const d=document.createElement('div');d.className='dot';steps.appendChild(d);}
+function giveLetter(i){got[i]=true;const s=slots.children[i];s.textContent=WORD[i];s.classList.add('on');}
+function refreshDots(){[...steps.children].forEach((d,i)=>{d.className='dot'+(i+1<stage?' done':i+1===stage?' cur':'');});}
+function unlock(n){stage=n;refreshDots();const c=$('st'+n);c.classList.remove('locked');setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'start'}),700);}
+refreshDots();
+
+function mc(box,q,opts,right,onRight,hints){
+  box.innerHTML='';const qd=document.createElement('div');qd.className='q';qd.textContent=q;box.appendChild(qd);
+  const m=document.createElement('div');m.className='msg';let done=false;
+  opts.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;box.appendChild(b);
+    b.onclick=()=>{if(done)return;if(i===right){done=true;b.classList.add('right');m.className='msg good';m.textContent='Richtig! ✔';onRight();}
+      else{b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');m.className='msg bad';m.textContent=(hints&&hints[i])||'Noch nicht – überleg nochmal.';}};});
+  box.appendChild(m);
+}
+
+/* ---------- Station 1 ---------- */
+const P={x:28,y:22},F={x:68,y:46};
+const M={x:(P.x+F.x)/2,y:(P.y+F.y)/2};const axP2={x:M.x-(F.y-P.y),y:M.y+(F.x-P.x)}; // zweiter Achsenpunkt
+const map1=$('map1');const g1=mapBase(map1);
+const axis1=lineThrough(g1,M,axP2,'axis');axis1.style.display='none';
+const lp=el('line',{stroke:'#4E9E7B','stroke-width':.35,'stroke-dasharray':'1 .7'},g1);
+const lf=el('line',{stroke:'#7E6FC4','stroke-width':.35,'stroke-dasharray':'1 .7'},g1);
+const holes=el('g',{},g1),flagsG=el('g',{},g1);
+emoji(g1,P,'🌴');cross(g1,P,'P',1.6,3.6);emoji(g1,F,'🪨');cross(g1,F,'F',1.6,3.6);
+const shovel=el('g',{style:'display:none'},g1);const shX=cross(shovel,{x:0,y:0});const shE=emoji(shovel,{x:0,y:0},'⛏️',-1.8,4.2);
+let sp=null;const flags=[];let s1done=false;
+function setShovel(p){sp=p;shovel.style.display='';shX.setAttribute('transform',`translate(${p.x},${p.y})`);shE.setAttribute('x',p.x);shE.setAttribute('y',p.y-1.8);
+  lp.setAttribute('x1',P.x);lp.setAttribute('y1',P.y);lp.setAttribute('x2',p.x);lp.setAttribute('y2',p.y);
+  lf.setAttribute('x1',F.x);lf.setAttribute('y1',F.y);lf.setAttribute('x2',p.x);lf.setAttribute('y2',p.y);
+  const a=dist(p,P),b=dist(p,F);$('dP').textContent='🌴 Palme: '+fmt(a)+' m';$('dF').textContent='🪨 Felsen: '+fmt(b)+' m';
+  const ok=Math.abs(a-b)<=1;$('dEq').textContent=ok?'gleich weit ✔':'Unterschied: '+fmt(Math.abs(a-b))+' m';$('dEq').classList.toggle('ok',ok);}
+let drag=false;
+map1.addEventListener('pointerdown',e=>{if(s1done)return;drag=true;map1.setPointerCapture(e.pointerId);setShovel(svgPt(map1,e));});
+map1.addEventListener('pointermove',e=>{if(drag)setShovel(svgPt(map1,e));});
+map1.addEventListener('pointerup',()=>drag=false);
+document.querySelectorAll('.pad button').forEach(b=>b.onclick=()=>{if(!sp||s1done)return;const[dx,dy]=b.dataset.d.split(',').map(Number);setShovel({x:Math.max(1,Math.min(W-1,sp.x+dx)),y:Math.max(1,Math.min(H-1,sp.y+dy))});});
+$('dig1').onclick=()=>{
+  const m=$('msg1');if(s1done)return;
+  if(!sp){m.className='msg info';m.textContent='Tippe zuerst auf die Karte, um die Schaufel zu platzieren.';return;}
+  const a=dist(sp,P),b=dist(sp,F);
+  if(Math.abs(a-b)>1){el('circle',{cx:sp.x,cy:sp.y,r:1,fill:'#C9B98F',opacity:.6},holes);
+    m.className='msg bad';m.textContent='Nur Sand … Du bist näher '+(a<b?'an der Palme':'am Felsen')+'. Geh etwas '+(a<b?'Richtung Felsen.':'Richtung Palme.');return;}
+  if(flags.some(f=>dist(f,sp)<6)){m.className='msg info';m.textContent='Hier steht schon eine Fahne – such eine andere Stelle!';return;}
+  flags.push({...sp});cross(flagsG,sp,null,0,0,'#C95670');emoji(flagsG,sp,'🚩',-1.6,4.2);
+  $('flagCount').textContent='🚩 '+flags.length+' / 4';
+  if(flags.length<4){m.className='msg good';m.textContent=['Volltreffer! Hier könnte der Schatz liegen. Aber es gibt noch mehr solche Stellen …','Wieder gleich weit! Such weiter – auch weit weg von den anderen Fahnen.','Noch eine Fahne fehlt. Schau dir an, wo deine Fahnen stehen …'][flags.length-1];}
+  else{s1done=true;shovel.style.display='none';lp.style.display=lf.style.display='none';m.className='msg good';m.textContent='4 Fahnen gesetzt! Schau dir die Karte genau an.';
+    $('mc1').classList.add('show');
+    mc($('mc1'),'Was fällt dir an der Lage der Fahnen auf?',
+      ['Sie liegen alle auf einem Kreis um die Palme.','Sie liegen alle auf einer Geraden.','Sie liegen ganz zufällig verteilt.'],1,
+      ()=>{axis1.style.display='';const t=el('text',{x:0,y:0,class:'lbl',fill:'#E0705F'},g1);t.textContent='a';t.setAttribute('x',68.5);t.setAttribute('y',7);t.style.fill='#E0705F';
+        $('merk1').classList.add('show');giveLetter(0);unlock(2);},
+      ['Dann wären alle Fahnen gleich weit von der Palme entfernt – das stimmt nicht.',null,'Schau genauer hin: Kannst du mit dem Lineal alle Fahnen verbinden?']);}
+};
+
+/* ---------- Station 2 ---------- */
+const map2=$('map2');const g2=mapBase(map2);
+const ghost2=lineThrough(g2,M,axP2,'axis ghost');ghost2.style.display='none';
+const c2P=el('circle',{cx:P.x,cy:P.y,r:12,class:'ccl',style:'stroke:#4E9E7B'},g2);
+const c2F=el('circle',{cx:F.x,cy:F.y,r:12,class:'ccl',style:'stroke:#7E6FC4'},g2);
+const ax2=el('g',{},g2);const sG=el('g',{},g2);
+emoji(g2,P,'🌴');cross(g2,P,'P',1.6,3.6);emoji(g2,F,'🪨');cross(g2,F,'F',1.6,3.6);
+let S=[];let s2drawn=false;
+function upd2(){const r=+$('r2').value;$('rv').textContent=fmt(r);c2P.setAttribute('r',r);c2F.setAttribute('r',r);
+  sG.innerHTML='';S=circInt(P,r,F,r);const m=$('msg2');
+  if(!S.length){m.className='msg bad';m.textContent='Die Kreise schneiden sich nicht. Der Radius muss größer als die halbe Strecke von P nach F sein!';$('draw2').disabled=true;}
+  else{S.forEach((s,i)=>cross(sG,s,'S'+(i?'₂':'₁'),1.6,-1.2,'#4F8BC2'));m.className='msg info';
+    m.textContent='S₁ und S₂ sind von P und von F jeweils '+fmt(r)+' m entfernt – also gleich weit!';$('draw2').disabled=s2drawn;}}
+$('r2').oninput=upd2;upd2();
+$('draw2').onclick=()=>{if(S.length<2)return;s2drawn=true;$('draw2').disabled=true;
+  lineThrough(ax2,S[0],S[1],'axis');const ghostFlags=el('g',{opacity:.55},g2);flags.forEach(f=>emoji(ghostFlags,f,'🚩',-1.6,3.6));
+  const m=$('msg2');m.className='msg good';m.textContent='Die Gerade geht genau durch deine Fahnen aus Station 1. Probier ruhig noch einen anderen Radius – die Gerade bleibt gleich!';
+  $('mc2').classList.add('show');
+  mc($('mc2'),'Warum müssen beide Kreise denselben Radius haben?',
+    ['Damit die Zeichnung ordentlich aussieht.','Damit die Schnittpunkte von P und F gleich weit entfernt sind.','Weil man den Zirkel nicht verstellen darf.'],1,
+    ()=>{$('merk2').classList.add('show');giveLetter(1);unlock(3);},
+    ['Schön aussehen ist nett – aber mathematisch geht es um etwas anderes.',null,'Doch, verstellen darf man ihn. Überlege, was der Radius über den Abstand aussagt.']);
+};
+$('r2').addEventListener('input',()=>{if(s2drawn){ax2.innerHTML='';lineThrough(ax2,...(S.length>1?S:[M,axP2]),'axis');}});
+
+/* ---------- Station 3 ---------- */
+const RA={x:50,y:35},RB={x:56,y:27};   // Fluss = Achse a (Richtung 3,-4)
+const T={x:30,y:22};
+const map3=$('map3');const g3=mapBase(map3,{river:{a:RA,b:RB}});
+lineThrough(g3,RA,RB,'axis');
+{const t=el('text',{x:80,y:5,class:'lbl'},g3);t.textContent='a';t.style.fill='#E0705F';}
+const con3=el('g',{},g3);const tr3=el('g',{},g3);
+emoji(g3,T,'💀');cross(g3,T,'T',1.6,3.6);
+function proj(p){const dx=RB.x-RA.x,dy=RB.y-RA.y,L2=dx*dx+dy*dy;const t=((p.x-RA.x)*dx+(p.y-RA.y)*dy)/L2;return{x:RA.x+t*dx,y:RA.y+t*dy};}
+const Tfoot=proj(T);const Tp={x:2*Tfoot.x-T.x,y:2*Tfoot.y-T.y};
+let s3=0,A3=null,B3=null,s3won=false,tries=0;
+function setTask(h){$('task3').innerHTML=h;}
+function reset3(){con3.innerHTML='';tr3.innerHTML='';s3=0;A3=B3=null;setTask('<b>Schritt 1:</b> Tippe auf einen <b>beliebigen Punkt A</b> auf dem Fluss (der roten Achse a).');$('msg3').textContent='';}
+$('reset3').onclick=()=>{reset3();};
+map3.addEventListener('pointerdown',e=>{
+  const p=svgPt(map3,e);const m=$('msg3');const q=proj(p);
+  if(s3===0||s3===1){
+    if(dist(p,q)>4){m.className='msg bad';m.textContent='Der Punkt muss auf dem Fluss (der Achse a) liegen!';return;}
+    if(s3===0){A3=q;cross(con3,A3,'A',1.6,-1.2,'#D9774D');el('circle',{cx:A3.x,cy:A3.y,r:dist(A3,T),class:'ccl',style:'stroke:#D9774D'},con3);
+      s3=1;m.className='msg info';m.textContent='Der Kreis um A geht durch T. Jeder Punkt auf diesem Kreis ist von A so weit entfernt wie T.';
+      setTask('<b>Schritt 2:</b> Tippe auf einen <b>zweiten Punkt B</b> auf dem Fluss – nicht zu nah an A.');}
+    else{if(dist(q,A3)<8){m.className='msg bad';m.textContent='B ist zu nah an A – dann schneiden sich die Kreise sehr ungenau. Wähle B weiter weg.';return;}
+      B3=q;cross(con3,B3,'B',1.6,-1.2,'#7E6FC4');el('circle',{cx:B3.x,cy:B3.y,r:dist(B3,T),class:'ccl',style:'stroke:#7E6FC4'},con3);
+      s3=2;m.className='msg info';m.textContent='Die beiden Kreise schneiden sich zweimal: einmal in T – und noch woanders!';
+      setTask('<b>Schritt 3:</b> Tippe auf den <b>zweiten Schnittpunkt</b> der beiden Kreise und grabe dort.');}
+  } else if(s3===2){
+    if(dist(p,Tp)<3.5){s3=3;cross(tr3,Tp,"T′",1.6,3.8,'#C95670');emoji(tr3,Tp,'💰',-1.8,5.5);
+      el('line',{x1:T.x,y1:T.y,x2:Tp.x,y2:Tp.y,stroke:'#9AA3B2','stroke-width':.3,'stroke-dasharray':'.8 .8'},tr3);
+      tries++;m.className='msg good';
+      m.textContent=tries===1?'💰 Gefunden! Klick auf „Neu beginnen“ und wähle andere Punkte A und B – landest du wieder beim Schatz?':'💰 Wieder genau dort! Egal welche Achsenpunkte A und B du nimmst – der Spiegelpunkt bleibt gleich.';
+      setTask('<b>Geschafft!</b> Der Schatz liegt im Spiegelpunkt T′ von T.');
+      if(!s3won){s3won=true;$('mc3').classList.add('show');
+        mc($('mc3'),'Warum ist der zweite Schnittpunkt genau der Spiegelpunkt T′?',
+          ['Weil A und B auf der Achse liegen und deshalb von T und T′ gleich weit entfernt sind.','Weil die beiden Kreise gleich groß sind.','Weil der Schnittpunkt immer rechts vom Fluss liegt.'],0,
+          ()=>{$('merk3').classList.add('show');giveLetter(2);unlock(4);},
+          [null,'Schau genau hin: Die Kreise sind meist gar nicht gleich groß!','Das hängt von der Lage ab – das ist keine Begründung.']);}}
+    else{el('circle',{cx:p.x,cy:p.y,r:1,fill:'#C9B98F',opacity:.6},con3);m.className='msg bad';m.textContent='Nur Sand … Grabe genau dort, wo sich die beiden Kreise zum zweiten Mal schneiden.';}
+  }
+});
+
+/* ---------- Station 4 ---------- */
+mc($('mc4a'),'Frage 1: Du willst die Symmetrieachse zu zwei Punkten P und P′ konstruieren. Um welche Punkte zeichnest du Kreise?',
+  ['Um P und um P′ – jeweils mit gleichem Radius.','Um zwei beliebige Punkte auf der Achse.','Nur um P – der Radius ist egal.'],0,
+  ()=>{giveLetter(3);$('mc4b').classList.add('show');},
+  [null,'Die Achse kennst du ja noch gar nicht – sie willst du erst finden!','Mit einem einzigen Kreis bekommst du keine Schnittpunkte.']);
+mc($('mc4b'),'Frage 2: Du willst den Spiegelpunkt P′ von P an der Achse a konstruieren. Um welche Punkte zeichnest du Kreise?',
+  ['Um P und um P′ mit gleichem Radius.','Um zwei beliebige Punkte auf der Achse a – jeweils durch P.','Um zwei beliebige Punkte neben der Achse.'],1,
+  ()=>{giveLetter(4);stage=5;refreshDots();unlock(5);},
+  ['P′ kennst du noch nicht – den willst du ja erst finden!',null,'Die Mittelpunkte müssen Achsenpunkte sein – nur die sind von P und P′ gleich weit entfernt.']);
+
+$('open').onclick=()=>{const v=$('word').value.trim().toUpperCase();const m=$('msg5');
+  if(v===WORD){m.textContent='';$('win').classList.add('show');[...steps.children].forEach(d=>d.className='dot done');}
+  else{m.className='msg bad';m.textContent='Das Schloss klemmt … Schau auf deine gesammelten Buchstaben.';}};
+</script>
+</body>
+</html>
