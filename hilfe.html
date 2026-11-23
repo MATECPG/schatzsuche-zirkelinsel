@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tipps und Lösungen</title>
+<style>
+  :root{--ink:#2F3440;--muted:#6B7280;--paper:#FFFDF8;--line:#ECE6DA;
+    --mint:#D8F0E4;--mint-d:#4E9E7B;--lav:#E6E0F8;--lav-d:#7E6FC4;--butter:#FBF2CC;--butter-d:#B8931A;--peach:#FDE3D3;--peach-d:#D9774D;--sol:#D23B3B}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Avenir Next","Nunito","Segoe UI",system-ui,-apple-system,sans-serif;line-height:1.5;font-size:17px}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  .kicker{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600}
+  h1{font-size:1.55rem;margin:.2em 0 .4em}
+  .intro{background:var(--butter);border-radius:14px;padding:12px 16px;font-size:.95rem}
+  .group{display:flex;align-items:center;gap:10px;margin:28px 0 6px;font-size:1.1rem;font-weight:700}
+  .ico{width:34px;height:34px;border-radius:50%;padding:7px;flex:none}
+  .ico.b{background:var(--mint);color:var(--mint-d)} .ico.w{background:var(--lav);color:var(--lav-d)}
+  .task{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:12px 0;box-shadow:0 2px 12px rgba(60,50,20,.05);scroll-margin-top:12px}
+  .task h2{margin:0 0 4px;font-size:1.15rem;display:flex;gap:10px;align-items:center}
+  .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#F1EEE6;font-size:1rem;flex:none}
+  .auf{color:var(--muted);font-size:.92rem;margin:0 0 8px}
+  details{border-radius:12px;margin:8px 0;overflow:hidden;scroll-margin-top:12px}
+  details.tipp{background:var(--butter)} details.loes{background:var(--mint)}
+  summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"＋";margin-left:auto;font-weight:400}
+  details[open] summary::after{content:"－"}
+  summary small{font-weight:500;color:var(--muted)}
+  .body{padding:2px 14px 14px;background:rgba(255,255,255,.55)}
+  .body p{margin:.5em 0}
+  .figs{display:flex;gap:8px;flex-wrap:wrap}
+  .figs svg{flex:1 1 30%;min-width:150px}
+  svg.fig{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--line);border-radius:10px;margin:8px 0}
+  .hl{animation:hl 1.6s}
+  @keyframes hl{0%{box-shadow:0 0 0 4px var(--peach-d)}100%{box-shadow:0 0 0 0 transparent}}
+  .back{display:inline-block;margin-top:24px;color:var(--muted)}
+  /* SVG wie auf dem Arbeitsblatt */
+  svg text{font-family:inherit}
+  .lbl{font-size:3.6px;font-weight:700;fill:#2F3440}
+  .axl{stroke:#E0705F;stroke-width:.5}
+  .gl{stroke:#4F8BC2;stroke-width:.45}
+  .cc{fill:none;stroke:#8A93A3;stroke-width:.25;stroke-dasharray:1.2 .8}
+  .x{stroke:#2F3440;stroke-width:.35;stroke-linecap:round}
+  .grid1{stroke:#E8E4DC;stroke-width:.2} .grid2{stroke:#D3CDBF;stroke-width:.25}
+  .sol .x{stroke:var(--sol)} .sol .lbl{fill:var(--sol)} .sol .cc{stroke:#E59A9A} .sol .axl,.sol .gl{stroke:var(--sol)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-tool" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a4 4 0 0 0 5 5l-8.6 8.6a2.1 2.1 0 0 1-3-3l8.6-8.6a4 4 0 0 0-2-2zM14.7 6.3l3-3a4 4 0 0 1 3 3l-3 3"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+</svg>
+<div class="wrap">
+  <div class="kicker">Mathe 7 · Konstruieren von Spiegelpunkten und Achse</div>
+  <h1>Tipps und Lösungen 🗝️</h1>
+  <div class="intro">Erst selbst probieren, dann den <b>Tipp</b> öffnen. Die <b>Lösung</b> brauchst du erst zum Kontrollieren. Rote Linien und Punkte in den Bildern gehören zur Lösung.</div>
+
+  <div class="group"><svg class="ico b"><use href="#i-tool"/></svg> Basiswerkzeug</div>
+
+  <section class="task" id="a1">
+    <h2><span class="n">1</span> Achsen finden</h2>
+    <p class="auf">Konstruiere jeweils die Symmetrieachse.</p>
+    <details class="tipp" id="t1"><summary>💡 Tipp</summary><div class="body">
+      <p>Schau auf dem Arbeitsblatt in Kasten ②. Um <b>welche beiden Punkte</b> zeichnest du die Kreise?</p>
+      <p>Beide Kreise brauchen <b>denselben Radius</b>, und er muss groß genug sein, damit sich die Kreise schneiden.</p></div></details>
+    <details class="loes" id="l1"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <p>Zeichne um K und K′ Kreise mit gleichem Radius (größer als die halbe Strecke [KK′]). Die Gerade durch die beiden Schnittpunkte ist die Symmetrieachse. Bei M, M′ und N, N′ gehst du genauso vor.</p>
+      <div class="figs"><svg class="fig" id="u1a" viewBox="0 0 58 52"></svg><svg class="fig" id="u1b" viewBox="0 0 58 52"></svg><svg class="fig" id="u1c" viewBox="0 0 58 52"></svg></div></div></details>
+  </section>
+
+  <section class="task" id="a2">
+    <h2><span class="n">2</span> Das Spiegeldreieck</h2>
+    <p class="auf">a) Konstruiere R′, S′ und T′ nur mit dem Zirkel. b) Vergleiche die Dreiecke.</p>
+    <details class="tipp" id="t2"><summary>💡 Tipp</summary><div class="body">
+      <p>Wähle zwei Punkte H₁ und H₂ auf der Achse a, die nicht zu nah beieinander liegen (Kasten ③).</p>
+      <p>Für R: Kreis um H₁ durch R und Kreis um H₂ durch R. Der <b>zweite</b> Schnittpunkt ist R′. Mit S und T machst du es genauso, die Punkte H₁ und H₂ kannst du dabei behalten.</p>
+      <p>Zu b): Wie lang sind die Seiten? Und laufen die Ecken R → S → T in derselben Richtung herum wie R′ → S′ → T′?</p></div></details>
+    <details class="loes" id="l2"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <svg class="fig" id="u2" viewBox="0 0 182 70"></svg>
+      <p>a) Um H₁ und H₂ werden jeweils Kreise durch R, S und T gezeichnet. Die zweiten Schnittpunkte sind R′, S′ und T′.</p>
+      <p>b) Beide Dreiecke sind gleich groß und haben dieselbe Form: Entsprechende Seiten sind gleich lang, entsprechende Winkel gleich groß. Der <b>Umlaufsinn</b> ist aber umgekehrt (RST im Uhrzeigersinn, R′S′T′ gegen den Uhrzeigersinn).</p></div></details>
+  </section>
+
+  <section class="task" id="a3">
+    <h2><span class="n">3</span> Im Koordinatensystem</h2>
+    <p class="auf">Konstruiere die Symmetrieachse und gib zwei Achsenpunkte an.</p>
+    <details class="tipp" id="t3"><summary>💡 Tipp</summary><div class="body">
+      <p>Die Kreise konstruierst du wie in Aufgabe 1. Lies danach Punkte auf a ab, die <b>genau auf Gitterpunkten</b> liegen.</p>
+      <p>Kontrolle: Die Mitte der Strecke [EE′] liegt immer auf der Achse.</p></div></details>
+    <details class="loes" id="l3"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <p>Mögliche Achsenpunkte (es gibt noch mehr):</p>
+      <p>a) (3|3), (4|1), (2|5)<br>b) (0|−2), (1|0), (−1|−4)<br>c) (−2|4), (0|0), (−1|2)<br>d) (0|−3), (1|−4), (−1|−2)</p>
+      <p>Konstruktion zu a):</p>
+      <svg class="fig" id="u3" viewBox="0 0 82 72" style="max-width:420px"></svg></div></details>
+  </section>
+
+  <section class="task" id="a4">
+    <h2><span class="n">4</span> Spiegeln im Team</h2>
+    <p class="auf">Konstruiert das Spiegeldreieck und überprüft euch gegenseitig.</p>
+    <details class="tipp" id="t4"><summary>💡 Tipp</summary><div class="body">
+      <p>Wählt für die Kreise zwei Punkte auf a, die <b>weit auseinander</b> liegen. Dann schneiden sich die Kreise deutlich und die Konstruktion wird genauer.</p>
+      <p>Ein spitzer Bleistift und ein fester Zirkel helfen sehr!</p></div></details>
+    <details class="loes" id="l4"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <p>Individuelle Lösung. Zur Kontrolle: Die Symmetrieachse zu A und A′ muss genau auf a liegen.</p>
+      <p>Weicht sie ab, wurde ungenau gearbeitet: Vielleicht ist der Zirkel verrutscht oder ein Kreismittelpunkt lag nicht genau auf a.</p></div></details>
+  </section>
+
+  <div class="group"><svg class="ico w"><use href="#i-bulb"/></svg> Weitergedacht</div>
+
+  <section class="task" id="a5">
+    <h2><span class="n">5</span> Spiegelbild einer Geraden</h2>
+    <p class="auf">a) Konstruiere g′. b) Beurteile Lukas’ Aussage. c) Erläutere dein Vorgehen, wenn g ∥ a.</p>
+    <details class="tipp" id="t5"><summary>💡 Tipp</summary><div class="body">
+      <p>Wo schneiden sich g und a? Was passiert mit einem Punkt, der <b>direkt auf der Achse</b> liegt, wenn du ihn spiegelst?</p>
+      <p>Wie viele Punkte brauchst du, um eine Gerade zu zeichnen?</p></div></details>
+    <details class="loes" id="l5"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <svg class="fig" id="u5" viewBox="0 0 76 62" style="max-width:420px"></svg>
+      <p>a) Siehe Abbildung: g′ ist die Gerade durch S und G′.</p>
+      <p>b) Lukas hat recht. g schneidet a im Punkt S. Da S auf der Achse liegt, ist S sein eigener Spiegelpunkt und liegt deshalb auch auf g′. Eine Gerade ist durch zwei Punkte festgelegt: Es genügt also, einen weiteren Punkt G von g zu spiegeln.</p>
+      <p>c) Dann gibt es keinen Schnittpunkt mit der Achse. Man wählt zwei Punkte G und H auf g, konstruiert G′ und H′ und zeichnet g′ durch G′ und H′. g′ ist dann ebenfalls parallel zu a.</p></div></details>
+  </section>
+
+  <section class="task" id="a6">
+    <h2><span class="n">6</span> Fehlersuche</h2>
+    <p class="auf">a) Beschreibe Mias Fehler. b) Begründe mit dem Satz von den Achsenpunkten. c) Konstruiere die richtige Achse.</p>
+    <details class="tipp" id="t6"><summary>💡 Tipp</summary><div class="body">
+      <p>Vergleiche die beiden Kreise von Mia genau. Was fällt dir an ihrer Größe auf?</p>
+      <p>Lies noch einmal Kasten ①: Welche Eigenschaft müssen Punkte haben, damit sie auf der Achse liegen?</p></div></details>
+    <details class="loes" id="l6"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <svg class="fig" id="u6" viewBox="0 0 74 52" style="max-width:420px"></svg>
+      <p>a) Mia hat um P und P′ Kreise mit <b>unterschiedlichen</b> Radien gezeichnet.</p>
+      <p>b) Ihre Schnittpunkte sind von P und P′ nicht gleich weit entfernt (zu P der kleine, zu P′ der große Radius). Nach dem Satz von den Achsenpunkten liegen nur Punkte, die von P und P′ gleich weit entfernt sind, auf der Achse. Also liegen Mias Schnittpunkte nicht auf der Achse.</p>
+      <p>c) Rot eingezeichnet: Kreise mit gleichem Radius um P und P′, die Gerade durch ihre Schnittpunkte ist die Achse a.</p></div></details>
+  </section>
+
+  <section class="task" id="a7">
+    <h2><span class="n">7</span> Der Schatz der drei Bäume</h2>
+    <p class="auf">a) Konstruiere die Lage des Schatzes und gib seine Koordinaten an. b) Begründe.</p>
+    <details class="tipp" id="t7"><summary>💡 Tipp</summary><div class="body">
+      <p>Wo liegen alle Punkte, die von A und B gleich weit entfernt sind? Und wo alle, die von B und C gleich weit entfernt sind?</p>
+      <p>Der Schatz muss auf <b>beiden</b> Linien liegen.</p></div></details>
+    <details class="loes" id="l7"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
+      <svg class="fig" id="u7" viewBox="0 0 86 70" style="max-width:440px"></svg>
+      <p>a) Die Symmetrieachse zu A und B ist die Gerade x = 4, die Symmetrieachse zu B und C ist die Gerade y = 3. Der Schatz liegt im Schnittpunkt <b>Z(4|3)</b>.</p>
+      <p>b) Z liegt auf der Achse zu A und B, ist also von A und B gleich weit entfernt. Z liegt auch auf der Achse zu B und C, ist also von B und C gleich weit entfernt. Damit ist Z von A genauso weit entfernt wie von C.</p></div></details>
+  </section>
+
+  <a class="back" href="./">← zurück zur Schatzsuche</a>
+</div>
+<script src="figuren.js"></script>
+<script>
+function openHash(){const id=location.hash.slice(1);if(!id)return;const e=document.getElementById(id);if(!e)return;
+  if(e.tagName==='DETAILS')e.open=true;
+  setTimeout(()=>{e.scrollIntoView({behavior:'smooth',block:'start'});e.classList.remove('hl');void e.offsetWidth;e.classList.add('hl');},60);}
+window.addEventListener('hashchange',openHash);openHash();
+</script>
+</body>
+</html>
