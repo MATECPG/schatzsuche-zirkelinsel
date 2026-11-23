@@ -45,8 +45,6 @@
   .dots{display:flex;gap:5px;margin-left:auto}
   .dots span{width:10px;height:10px;border-radius:50%;background:#E5E0D4}
   .dots span.on{background:var(--mint-d)} .dots span.cur{background:var(--peach-d)}
-  .bar{height:4px;background:#F1EEE6;border-radius:4px;margin-top:8px;overflow:hidden}
-  .bar i{display:block;height:100%;width:0;background:var(--peach-d)}
   svg.fig g[data-step]{transition:opacity .5s}
   svg.fig g[data-step].hide{opacity:0}
   svg.fig g[data-step].old{opacity:.45}
@@ -171,30 +169,78 @@
 </div>
 <script src="figuren.js"></script>
 <script>
-/* Schritt-für-Schritt-Lösungen, laufen beim Öffnen selbst ab */
-const DELAY=3200;
+/* Schritt-für-Schritt-Lösungen: Bilder entstehen wie mit Zirkel und Lineal */
+const PAUSE=1700;            // Lesezeit nach jedem Schritt (ms)
+const T_CIRCLE=1500, T_LINE=900, T_POINT=260;
+const clr=e=>{['opacity','transition','strokeDasharray','strokeDashoffset'].forEach(k=>e.style[k]='');};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+
+/* Ein einzelnes Element zeichnen; Rückgabe: Promise */
+function drawEl(e,svg,run){
+  const tag=e.tagName, isX=e.classList.contains('x');
+  if(tag==='text'||isX){e.style.transition='none';e.style.opacity=0;void e.getBBox();
+    e.style.transition=`opacity ${T_POINT}ms`;e.style.opacity=1;return sleep(isX?60:T_POINT);}
+  let len,at,ctr=null,dur;
+  if(tag==='circle'){const r=+e.getAttribute('r'),cx=+e.getAttribute('cx'),cy=+e.getAttribute('cy');
+    len=2*Math.PI*r;at=p=>({x:cx+r*Math.cos(2*Math.PI*p),y:cy+r*Math.sin(2*Math.PI*p)});ctr={x:cx,y:cy};dur=T_CIRCLE;}
+  else if(tag==='line'){const a={x:+e.getAttribute('x1'),y:+e.getAttribute('y1')},b={x:+e.getAttribute('x2'),y:+e.getAttribute('y2')};
+    len=Math.hypot(b.x-a.x,b.y-a.y);at=p=>({x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p});dur=T_LINE;}
+  else if(tag==='polygon'){len=e.getTotalLength();at=p=>e.getPointAtLength(p*len);dur=T_LINE*1.5;}
+  else return Promise.resolve();
+  const keep=e.getAttribute('style');
+  e.style.strokeDasharray=`${len} ${len}`;e.style.strokeDashoffset=len;
+  const vb=svg.viewBox.baseVal,sc=Math.max(vb.width,vb.height)/80;   // Werkzeuggröße an Bild anpassen
+  const tool=el('g',{class:'tool'},svg);
+  const arm=ctr?el('line',{stroke:'#D9774D','stroke-width':.45*sc,'stroke-linecap':'round'},tool):null;
+  if(ctr)el('circle',{cx:ctr.x,cy:ctr.y,r:.7*sc,fill:'#D9774D'},tool);
+  const tip=el('circle',{r:.9*sc,fill:'#fff',stroke:'#D9774D','stroke-width':.45*sc},tool);
+  return new Promise(res=>{const t0=performance.now();
+    (function fr(t){if(run.stop){tool.remove();clr(e);return res();}
+      const p=Math.min(1,(t-t0)/dur),q=ease(p),pt=at(q);
+      e.style.strokeDashoffset=len*(1-q);tip.setAttribute('cx',pt.x);tip.setAttribute('cy',pt.y);
+      if(arm){arm.setAttribute('x1',ctr.x);arm.setAttribute('y1',ctr.y);arm.setAttribute('x2',pt.x);arm.setAttribute('y2',pt.y);}
+      if(p<1)requestAnimationFrame(fr);else{tool.remove();clr(e);res();}
+    })(t0);});
+}
+/* Alle Elemente eines Schritts nacheinander zeichnen (mehrere Bilder parallel) */
+function drawStep(groups,run){
+  const bySvg=new Map();groups.forEach(g=>{const s=g.ownerSVGElement;if(!bySvg.has(s))bySvg.set(s,[]);bySvg.get(s).push(g);});
+  return Promise.all([...bySvg].map(async([svg,gs])=>{
+    const els=gs.flatMap(g=>[...g.children]);
+    els.forEach(e=>{if(e.tagName==='text'||e.classList.contains('x'))e.style.opacity=0;else{const l=e.tagName==='circle'?2*Math.PI*e.getAttribute('r'):e.tagName==='polygon'?e.getTotalLength():Math.hypot(e.getAttribute('x2')-e.getAttribute('x1'),e.getAttribute('y2')-e.getAttribute('y1'));e.style.strokeDasharray=`${l} ${l}`;e.style.strokeDashoffset=l;}});
+    gs.forEach(g=>g.classList.remove('hide'));
+    for(const e of els){if(run.stop){els.forEach(clr);break;}await drawEl(e,svg,run);}
+  }));
+}
+
 document.querySelectorAll('.player').forEach(pl=>{
   const caps=JSON.parse(pl.dataset.steps), N=caps.length-1;
   const body=pl.closest('.body'), groups=[...body.querySelectorAll('svg.fig g[data-step]')];
-  pl.innerHTML='<div class="cap"></div><div class="ctrl"><button class="first" aria-label="Anfang">⏮</button><button class="prev" aria-label="zurück">◀</button><button class="play">▶ Abspielen</button><button class="next" aria-label="weiter">▶︎|</button><div class="dots"></div></div><div class="bar"><i></i></div>';
-  const cap=pl.querySelector('.cap'),dots=pl.querySelector('.dots'),bar=pl.querySelector('.bar i'),play=pl.querySelector('.play');
+  pl.innerHTML='<div class="cap"></div><div class="ctrl"><button class="first" aria-label="Anfang">⏮</button><button class="prev" aria-label="zurück">◀</button><button class="play">▶ Abspielen</button><button class="next" aria-label="weiter">▶︎|</button><div class="dots"></div></div>';
+  const cap=pl.querySelector('.cap'),dots=pl.querySelector('.dots'),play=pl.querySelector('.play');
   for(let i=0;i<=N;i++)dots.appendChild(document.createElement('span'));
-  let cur=0,timer=null;
-  function show(n){cur=Math.max(0,Math.min(N,n));
-    groups.forEach(g=>{const s=+g.dataset.step;g.classList.toggle('hide',s>cur);g.classList.toggle('old',s<cur&&cur<N);});
-    cap.textContent=caps[cur];[...dots.children].forEach((d,i)=>d.className=i<cur?'on':i===cur?'cur':'');
+  let cur=0,run={stop:true},busy=null;
+  function paint(){cap.textContent=caps[cur];[...dots.children].forEach((d,i)=>d.className=i<cur?'on':i===cur?'cur':'');
     pl.querySelector('.prev').disabled=pl.querySelector('.first').disabled=cur===0;pl.querySelector('.next').disabled=cur===N;}
-  function tick(){bar.style.transition='none';bar.style.width='0';void bar.offsetWidth;bar.style.transition=`width ${DELAY}ms linear`;bar.style.width='100%';}
-  function stop(){clearInterval(timer);timer=null;play.textContent=cur===N?'↺ Nochmal':'▶ Abspielen';bar.style.transition='none';bar.style.width='0';}
-  function start(){if(cur===N)show(0);play.textContent='⏸ Pause';tick();
-    timer=setInterval(()=>{show(cur+1);if(cur===N)stop();else tick();},DELAY);}
-  play.onclick=()=>timer?stop():start();
-  pl.querySelector('.next').onclick=()=>{stop();show(cur+1);stop();};
-  pl.querySelector('.prev').onclick=()=>{stop();show(cur-1);stop();};
-  pl.querySelector('.first').onclick=()=>{stop();show(0);stop();};
+  function setStatic(n){cur=Math.max(0,Math.min(N,n));
+    groups.forEach(g=>{const s=+g.dataset.step;g.classList.toggle('hide',s>cur);g.classList.toggle('old',s<cur&&cur<N);
+      [...g.children].forEach(clr);});paint();}
+  async function stepForward(r){if(cur>=N)return;cur++;paint();
+    groups.forEach(g=>{const s=+g.dataset.step;g.classList.toggle('old',s<cur&&cur<N);});
+    await drawStep(groups.filter(g=>+g.dataset.step===cur),r);
+    if(cur===N)groups.forEach(g=>g.classList.remove('old'));}
+  async function halt(){run.stop=true;if(busy)await busy;busy=null;play.textContent=cur===N?'↺ Nochmal':'▶ Abspielen';}
+  async function start(){await halt();if(cur===N)setStatic(0);const r=run={stop:false};play.textContent='⏸ Pause';
+    busy=(async()=>{await sleep(cur===0?1400:300);while(!r.stop&&cur<N){await stepForward(r);if(r.stop)break;await sleep(PAUSE);}
+      if(!r.stop){r.stop=true;play.textContent='↺ Nochmal';}})();}
+  play.onclick=()=>run.stop?start():halt();
+  pl.querySelector('.next').onclick=async()=>{await halt();const r=run={stop:false};busy=stepForward(r);await busy;r.stop=true;busy=null;play.textContent=cur===N?'↺ Nochmal':'▶ Abspielen';};
+  pl.querySelector('.prev').onclick=async()=>{await halt();setStatic(cur-1);};
+  pl.querySelector('.first').onclick=async()=>{await halt();setStatic(0);};
   const det=pl.closest('details');
-  det.addEventListener('toggle',()=>{if(det.open){stop();show(0);start();}else stop();});
-  show(0);stop();
+  det.addEventListener('toggle',async()=>{if(det.open){await halt();setStatic(0);start();}else halt();});
+  setStatic(0);
 });
 
 function openHash(){const id=location.hash.slice(1);if(!id)return;const e=document.getElementById(id);if(!e)return;
