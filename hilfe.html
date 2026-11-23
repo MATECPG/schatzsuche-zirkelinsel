@@ -35,6 +35,21 @@
   .hl{animation:hl 1.6s}
   @keyframes hl{0%{box-shadow:0 0 0 4px var(--peach-d)}100%{box-shadow:0 0 0 0 transparent}}
   .back{display:inline-block;margin-top:24px;color:var(--muted)}
+  /* Schritt-Player */
+  .player{background:#fff;border-radius:12px;padding:10px 12px;margin:4px 0 10px;border:1px solid var(--line)}
+  .cap{font-weight:600;min-height:2.9em;display:flex;align-items:center}
+  .ctrl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  .ctrl button{font:inherit;font-size:.95rem;border:none;border-radius:10px;padding:7px 12px;background:#F1EEE6;color:var(--ink);cursor:pointer;min-width:44px}
+  .ctrl button.play{background:var(--peach-d);color:#fff;font-weight:700}
+  .ctrl button:disabled{opacity:.35;cursor:default}
+  .dots{display:flex;gap:5px;margin-left:auto}
+  .dots span{width:10px;height:10px;border-radius:50%;background:#E5E0D4}
+  .dots span.on{background:var(--mint-d)} .dots span.cur{background:var(--peach-d)}
+  .bar{height:4px;background:#F1EEE6;border-radius:4px;margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--peach-d)}
+  svg.fig g[data-step]{transition:opacity .5s}
+  svg.fig g[data-step].hide{opacity:0}
+  svg.fig g[data-step].old{opacity:.45}
   /* SVG wie auf dem Arbeitsblatt */
   svg text{font-family:inherit}
   .lbl{font-size:3.6px;font-weight:700;fill:#2F3440}
@@ -66,7 +81,8 @@
       <p>Beide Kreise brauchen <b>denselben Radius</b>, und er muss groß genug sein, damit sich die Kreise schneiden.</p></div></details>
     <details class="loes" id="l1"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
       <p>Zeichne um K und K′ Kreise mit gleichem Radius (größer als die halbe Strecke [KK′]). Die Gerade durch die beiden Schnittpunkte ist die Symmetrieachse. Bei M, M′ und N, N′ gehst du genauso vor.</p>
-      <div class="figs"><svg class="fig" id="u1a" viewBox="0 0 58 52"></svg><svg class="fig" id="u1b" viewBox="0 0 58 52"></svg><svg class="fig" id="u1c" viewBox="0 0 58 52"></svg></div></div></details>
+      <div class="figs"><svg class="fig" id="u1a" viewBox="0 0 58 52"></svg><svg class="fig" id="u1b" viewBox="0 0 58 52"></svg><svg class="fig" id="u1c" viewBox="0 0 58 52"></svg></div>
+      <div class="player" data-steps='["Ausgangslage: K und K′ sind zueinander symmetrisch.","Schritt 1: Kreis um K. Der Radius muss größer sein als die halbe Strecke [KK′].","Schritt 2: Kreis um K′ mit dem gleichen Radius.","Schritt 3: Die beiden Schnittpunkte markieren.","Schritt 4: Gerade durch die Schnittpunkte zeichnen. Das ist die Symmetrieachse!"]'></div></div></details>
   </section>
 
   <section class="task" id="a2">
@@ -78,6 +94,7 @@
       <p>Zu b): Wie lang sind die Seiten? Und laufen die Ecken R → S → T in derselben Richtung herum wie R′ → S′ → T′?</p></div></details>
     <details class="loes" id="l2"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
       <svg class="fig" id="u2" viewBox="0 0 182 70"></svg>
+      <div class="player" data-steps='["Ausgangslage: Dreieck RST und Achse a.","Schritt 1: Zwei Punkte H₁ und H₂ auf a wählen, nicht zu nah beieinander.","Schritt 2: Kreis um H₁ durch R und Kreis um H₂ durch R. Der zweite Schnittpunkt ist R′.","Schritt 3: Genauso mit S: Kreise durch S liefern S′.","Schritt 4: Genauso mit T: Kreise durch T liefern T′.","Schritt 5: R′, S′ und T′ verbinden. Fertig ist das Spiegeldreieck!"]'></div>
       <p>a) Um H₁ und H₂ werden jeweils Kreise durch R, S und T gezeichnet. Die zweiten Schnittpunkte sind R′, S′ und T′.</p>
       <p>b) Beide Dreiecke sind gleich groß und haben dieselbe Form: Entsprechende Seiten sind gleich lang, entsprechende Winkel gleich groß. Der <b>Umlaufsinn</b> ist aber umgekehrt (RST im Uhrzeigersinn, R′S′T′ gegen den Uhrzeigersinn).</p></div></details>
   </section>
@@ -92,7 +109,8 @@
       <p>Mögliche Achsenpunkte (es gibt noch mehr):</p>
       <p>a) (3|3), (4|1), (2|5)<br>b) (0|−2), (1|0), (−1|−4)<br>c) (−2|4), (0|0), (−1|2)<br>d) (0|−3), (1|−4), (−1|−2)</p>
       <p>Konstruktion zu a):</p>
-      <svg class="fig" id="u3" viewBox="0 0 82 72" style="max-width:420px"></svg></div></details>
+      <svg class="fig" id="u3" viewBox="0 0 82 72" style="max-width:420px"></svg>
+      <div class="player" data-steps='["Ausgangslage: E(1|2) und E′(5|4).","Schritt 1: Kreis um E.","Schritt 2: Kreis um E′ mit dem gleichen Radius.","Schritt 3: Die beiden Schnittpunkte markieren.","Schritt 4: Gerade durch die Schnittpunkte. Das ist die Achse a.","Schritt 5: Punkte auf a ablesen, die genau auf Gitterpunkten liegen: (3|3), (4|1), (2|5)."]'></div></div></details>
   </section>
 
   <section class="task" id="a4">
@@ -116,6 +134,7 @@
       <p>Wie viele Punkte brauchst du, um eine Gerade zu zeichnen?</p></div></details>
     <details class="loes" id="l5"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
       <svg class="fig" id="u5" viewBox="0 0 76 62" style="max-width:420px"></svg>
+      <div class="player" data-steps='["Ausgangslage: Gerade g und Achse a.","Schritt 1: Schnittpunkt S von g und a markieren. S liegt auf der Achse, also bleibt S beim Spiegeln, wo es ist.","Schritt 2: Einen weiteren Punkt G auf g wählen.","Schritt 3: Zwei Punkte auf a wählen und um sie Kreise durch G zeichnen.","Schritt 4: Der zweite Schnittpunkt der Kreise ist G′.","Schritt 5: Gerade durch S und G′ zeichnen. Das ist g′!"]'></div>
       <p>a) Siehe Abbildung: g′ ist die Gerade durch S und G′.</p>
       <p>b) Lukas hat recht. g schneidet a im Punkt S. Da S auf der Achse liegt, ist S sein eigener Spiegelpunkt und liegt deshalb auch auf g′. Eine Gerade ist durch zwei Punkte festgelegt: Es genügt also, einen weiteren Punkt G von g zu spiegeln.</p>
       <p>c) Dann gibt es keinen Schnittpunkt mit der Achse. Man wählt zwei Punkte G und H auf g, konstruiert G′ und H′ und zeichnet g′ durch G′ und H′. g′ ist dann ebenfalls parallel zu a.</p></div></details>
@@ -129,6 +148,7 @@
       <p>Lies noch einmal Kasten ①: Welche Eigenschaft müssen Punkte haben, damit sie auf der Achse liegen?</p></div></details>
     <details class="loes" id="l6"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
       <svg class="fig" id="u6" viewBox="0 0 74 52" style="max-width:420px"></svg>
+      <div class="player" data-steps='["Mias Konstruktion: zwei verschieden große Kreise, dadurch die falsche Gerade „a?“.","Schritt 1: Kreis um P …","Schritt 2: … und Kreis um P′ mit dem gleichen Radius.","Schritt 3: Schnittpunkte markieren. Sie sind von P und P′ gleich weit entfernt.","Schritt 4: Gerade durch die Schnittpunkte. Das ist die richtige Achse a."]'></div>
       <p>a) Mia hat um P und P′ Kreise mit <b>unterschiedlichen</b> Radien gezeichnet.</p>
       <p>b) Ihre Schnittpunkte sind von P und P′ nicht gleich weit entfernt (zu P der kleine, zu P′ der große Radius). Nach dem Satz von den Achsenpunkten liegen nur Punkte, die von P und P′ gleich weit entfernt sind, auf der Achse. Also liegen Mias Schnittpunkte nicht auf der Achse.</p>
       <p>c) Rot eingezeichnet: Kreise mit gleichem Radius um P und P′, die Gerade durch ihre Schnittpunkte ist die Achse a.</p></div></details>
@@ -142,6 +162,7 @@
       <p>Der Schatz muss auf <b>beiden</b> Linien liegen.</p></div></details>
     <details class="loes" id="l7"><summary>✅ Lösung <small>erst selbst probieren!</small></summary><div class="body">
       <svg class="fig" id="u7" viewBox="0 0 86 70" style="max-width:440px"></svg>
+      <div class="player" data-steps='["Ausgangslage: die drei Bäume A, B und C.","Schritt 1: Kreise mit gleichem Radius um A und B.","Schritt 2: Die Achse zu A und B ist die Gerade x = 4. Jeder Punkt darauf ist von A und B gleich weit entfernt.","Schritt 3: Kreise mit gleichem Radius um B und C.","Schritt 4: Die Achse zu B und C ist die Gerade y = 3.","Schritt 5: Der Schnittpunkt Z(4|3) liegt auf beiden Achsen. Hier ist der Schatz!"]'></div>
       <p>a) Die Symmetrieachse zu A und B ist die Gerade x = 4, die Symmetrieachse zu B und C ist die Gerade y = 3. Der Schatz liegt im Schnittpunkt <b>Z(4|3)</b>.</p>
       <p>b) Z liegt auf der Achse zu A und B, ist also von A und B gleich weit entfernt. Z liegt auch auf der Achse zu B und C, ist also von B und C gleich weit entfernt. Damit ist Z von A genauso weit entfernt wie von C.</p></div></details>
   </section>
@@ -150,6 +171,32 @@
 </div>
 <script src="figuren.js"></script>
 <script>
+/* Schritt-für-Schritt-Lösungen, laufen beim Öffnen selbst ab */
+const DELAY=3200;
+document.querySelectorAll('.player').forEach(pl=>{
+  const caps=JSON.parse(pl.dataset.steps), N=caps.length-1;
+  const body=pl.closest('.body'), groups=[...body.querySelectorAll('svg.fig g[data-step]')];
+  pl.innerHTML='<div class="cap"></div><div class="ctrl"><button class="first" aria-label="Anfang">⏮</button><button class="prev" aria-label="zurück">◀</button><button class="play">▶ Abspielen</button><button class="next" aria-label="weiter">▶︎|</button><div class="dots"></div></div><div class="bar"><i></i></div>';
+  const cap=pl.querySelector('.cap'),dots=pl.querySelector('.dots'),bar=pl.querySelector('.bar i'),play=pl.querySelector('.play');
+  for(let i=0;i<=N;i++)dots.appendChild(document.createElement('span'));
+  let cur=0,timer=null;
+  function show(n){cur=Math.max(0,Math.min(N,n));
+    groups.forEach(g=>{const s=+g.dataset.step;g.classList.toggle('hide',s>cur);g.classList.toggle('old',s<cur&&cur<N);});
+    cap.textContent=caps[cur];[...dots.children].forEach((d,i)=>d.className=i<cur?'on':i===cur?'cur':'');
+    pl.querySelector('.prev').disabled=pl.querySelector('.first').disabled=cur===0;pl.querySelector('.next').disabled=cur===N;}
+  function tick(){bar.style.transition='none';bar.style.width='0';void bar.offsetWidth;bar.style.transition=`width ${DELAY}ms linear`;bar.style.width='100%';}
+  function stop(){clearInterval(timer);timer=null;play.textContent=cur===N?'↺ Nochmal':'▶ Abspielen';bar.style.transition='none';bar.style.width='0';}
+  function start(){if(cur===N)show(0);play.textContent='⏸ Pause';tick();
+    timer=setInterval(()=>{show(cur+1);if(cur===N)stop();else tick();},DELAY);}
+  play.onclick=()=>timer?stop():start();
+  pl.querySelector('.next').onclick=()=>{stop();show(cur+1);stop();};
+  pl.querySelector('.prev').onclick=()=>{stop();show(cur-1);stop();};
+  pl.querySelector('.first').onclick=()=>{stop();show(0);stop();};
+  const det=pl.closest('details');
+  det.addEventListener('toggle',()=>{if(det.open){stop();show(0);start();}else stop();});
+  show(0);stop();
+});
+
 function openHash(){const id=location.hash.slice(1);if(!id)return;const e=document.getElementById(id);if(!e)return;
   if(e.tagName==='DETAILS')e.open=true;
   setTimeout(()=>{e.scrollIntoView({behavior:'smooth',block:'start'});e.classList.remove('hl');void e.offsetWidth;e.classList.add('hl');},60);}
