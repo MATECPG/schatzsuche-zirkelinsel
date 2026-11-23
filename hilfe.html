@@ -199,8 +199,11 @@ document.querySelectorAll('.player').forEach(pl=>{
 
 function openHash(){const id=location.hash.slice(1);if(!id)return;const e=document.getElementById(id);if(!e)return;
   if(e.tagName==='DETAILS')e.open=true;
-  setTimeout(()=>{e.scrollIntoView({behavior:'smooth',block:'start'});e.classList.remove('hl');void e.offsetWidth;e.classList.add('hl');},60);}
-window.addEventListener('hashchange',openHash);openHash();
+  const go=()=>e.scrollIntoView({block:'start'});
+  setTimeout(()=>{go();e.classList.remove('hl');void e.offsetWidth;e.classList.add('hl');},80);
+  setTimeout(go,500);}
+window.addEventListener('hashchange',openHash);
+if(document.readyState==='complete')openHash();else window.addEventListener('load',openHash);
 </script>
 </body>
 </html>
