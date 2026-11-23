@@ -75,7 +75,7 @@ if(S('u5')){const s=S('u5');const a1={x:10,y:60},a2={x:62,y:2};L(s,a1,a2,'axl','
 /* ---------- Aufgabe 6: Fehlersuche ---------- */
 if(S('u6')){const s=S('u6');const P={x:16,y:32},Q={x:48,y:24};X(s,P,'P',-4,1);X(s,Q,'P′',1.6,-1.2);
  const k=ci(P,20,Q,28);Cc(s,P,20);Cc(s,Q,28);k.forEach(p=>X(s,p,''));L(s,k[0],k[1],'axl','a?',{x:k[0].x+2.5,y:k[0].y+1});
- const g=sg(s);const k2=axisCon(g,P,Q,22,false);L(g,k2[0],k2[1],'axl','a',{x:k2[0].x-5,y:k2[0].y+4});}
+ const g=sg(s);const k2=axisCon(g,P,Q,22,false);L(g,k2[0],k2[1],'axl','a',{x:k2[1].x+2,y:k2[1].y+6});}
 
 /* ---------- Aufgabe 7: Schatz der drei Bäume ---------- */
 if(S('u7')){const s=S('u7');const px=kosy(s,8,64,9,0,8,0,6);
